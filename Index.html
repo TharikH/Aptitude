@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aptitude Test Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar & Touch Enhancements */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .tap-highlight-none { -webkit-tap-highlight-color: transparent; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.2s ease-out forwards; }
+    </style>
+</head>
+<body class="h-full font-sans text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900 tap-highlight-none flex flex-col">
+
+    <!-- ===================================================================== -->
+    <!-- TOAST NOTIFICATION CONTAINER                                          -->
+    <!-- ===================================================================== -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- ===================================================================== -->
+    <!-- CONFIRMATION MODAL (No native alert/confirm)                          -->
+    <!-- ===================================================================== -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-100 animate-fade-in">
+            <h3 id="confirm-title" class="text-lg font-bold text-slate-900">Confirm Action</h3>
+            <p id="confirm-message" class="text-sm text-slate-600 mt-2 leading-relaxed"></p>
+            <div id="confirm-stats" class="mt-4 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 hidden"></div>
+            <div class="mt-6 flex items-center justify-end gap-3">
+                <button id="confirm-cancel-btn" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">Cancel</button>
+                <button id="confirm-ok-btn" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 shadow-xs transition">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 1: LOGIN & WELCOME SCREEN                                        -->
+    <!-- ===================================================================== -->
+    <div id="view-login" class="flex-1 flex flex-col justify-center items-center p-4 sm:p-6 overflow-y-auto">
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-200/80 overflow-hidden my-auto">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 p-6 sm:p-8 text-white relative overflow-hidden">
+                <div class="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-medium mb-3">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Online Assessment Portal
+                </div>
+                <h1 id="login-test-title" class="text-2xl font-bold tracking-tight">General Aptitude Assessment</h1>
+                <p id="login-test-subtitle" class="text-indigo-100 text-sm mt-1">Sign in with your candidate credentials to begin</p>
+                
+                <!-- Quick Test Metadata Pills -->
+                <div class="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-white/15 text-xs text-indigo-100">
+                    <span class="inline-flex items-center gap-1.5 bg-black/15 px-2.5 py-1 rounded-lg">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <strong id="meta-q-count">0</strong> Questions
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 bg-black/15 px-2.5 py-1 rounded-lg">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <strong id="meta-duration">30</strong> Mins
+                    </span>
+                    <span id="meta-source-badge" class="inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-200 px-2.5 py-1 rounded-lg font-medium">
+                        Default Set
+                    </span>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="p-6 sm:p-8 space-y-5" onsubmit="handleLogin(event)">
+                <div>
+                    <label for="login-username" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Username / Roll ID</label>
+                    <input type="text" id="login-username" required autocomplete="username" placeholder="e.g., friend"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder-slate-400 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                </div>
+
+                <div>
+                    <label for="login-password" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Access Password</label>
+                    <div class="relative">
+                        <input type="password" id="login-password" required autocomplete="current-password" placeholder="Enter password"
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder-slate-400 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition pr-12">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 text-xs font-medium">
+                            Show
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="candidate-custom-name" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Your Display Name <span class="text-slate-400 font-normal">(Optional)</span></label>
+                    <input type="text" id="candidate-custom-name" placeholder="Leave blank to use default name"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder-slate-400 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                </div>
+
+                <div id="login-error" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
+                    <svg class="w-4 h-4 shrink-0 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span id="login-error-text">Invalid username or password.</span>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-semibold text-sm shadow-md shadow-indigo-600/20 transition flex items-center justify-center gap-2">
+                    <span>Start Aptitude Test</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </button>
+
+                <!-- Quick Upload JSON directly from Login for convenience -->
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                    <span>Have a custom <code class="font-mono text-slate-700">questions.json</code>?</span>
+                    <button type="button" onclick="openAdminModalFromLogin()" class="text-indigo-600 hover:text-indigo-800 font-semibold underline underline-offset-2">
+                        Manage / Upload JSON
+                    </button>
+                </div>
+            </form>
+
+            <!-- Collapsible Setup & Demo Credentials Guide -->
+            <div class="bg-slate-50 border-t border-slate-200/80 px-6 py-4">
+                <details class="group text-xs text-slate-600">
+                    <summary class="flex items-center justify-between cursor-pointer font-semibold text-slate-700 select-none">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Admin & Demo Login Guide (Click to expand)
+                        </span>
+                        <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="mt-3 space-y-3 pt-3 border-t border-slate-200/60 leading-relaxed">
+                        <div class="flex flex-col gap-1.5 bg-white p-3 rounded-xl border border-slate-200">
+                            <div class="flex items-center justify-between">
+                                <span><strong>Candidate Login:</strong> <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded">friend</code> / <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded">pass123</code></span>
+                                <button type="button" onclick="fillDemoLogin('friend', 'pass123')" class="text-[11px] bg-indigo-50 text-indigo-700 font-semibold px-2 py-1 rounded hover:bg-indigo-100">Auto-Fill</button>
+                            </div>
+                            <div class="flex items-center justify-between pt-1 border-t border-slate-100">
+                                <span><strong>Admin / Creator:</strong> <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded">admin</code> / <code class="font-mono bg-slate-100 px-1.5 py-0.5 rounded">admin123</code></span>
+                                <button type="button" onclick="fillDemoLogin('admin', 'admin123')" class="text-[11px] bg-amber-50 text-amber-700 font-semibold px-2 py-1 rounded hover:bg-amber-100">Auto-Fill</button>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-500">
+                            <strong>GitHub Pages Hosting Tip:</strong> You can edit <code class="font-mono">DEFAULT_TEST_DATA</code> directly at the top of the script in <code class="font-mono">index.html</code>, OR upload a <code class="font-mono">questions.json</code> file in the same GitHub repository folder—this app automatically checks for <code class="font-mono">./questions.json</code> on load!
+                        </p>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 2: TEST INTERFACE (Responsive Desktop + Mobile/Tablet)           -->
+    <!-- ===================================================================== -->
+    <div id="view-test" class="hidden flex-1 flex flex-col h-full overflow-hidden bg-slate-100">
+        <!-- Top Exam Header Bar -->
+        <header class="bg-white border-b border-slate-200 px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2 shrink-0 z-20 shadow-2xs">
+            <div class="flex items-center gap-3 min-w-0">
+                <!-- Mobile Palette Drawer Trigger -->
+                <button type="button" onclick="toggleMobilePalette()" class="lg:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 relative" aria-label="Toggle Question Palette">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                </button>
+                <div class="min-w-0">
+                    <h2 id="exam-header-title" class="text-sm sm:text-base font-bold text-slate-900 truncate">Aptitude Test</h2>
+                    <p class="text-xs text-slate-500 truncate flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span id="exam-candidate-name">Candidate</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Controls: Timer, Admin Quick Edit (if Admin), Submit -->
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <button id="header-admin-btn" type="button" onclick="openManagerModal()" class="hidden px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-semibold items-center gap-1.5 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span class="hidden sm:inline">JSON Manager</span>
+                </button>
+
+                <!-- Countdown Timer Pill -->
+                <div id="timer-box" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 font-mono text-xs sm:text-sm font-semibold">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span id="timer-display">30:00</span>
+                </div>
+
+                <button type="button" onclick="promptSubmitTest()" class="px-3.5 sm:px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-xs sm:text-sm shadow-xs transition">
+                    Submit Test
+                </button>
+            </div>
+        </header>
+
+        <!-- Section Filter Bar (if multiple sections exist) -->
+        <div id="section-tabs-bar" class="bg-white border-b border-slate-200 px-3 sm:px-6 py-2 flex items-center gap-2 overflow-x-auto shrink-0">
+            <!-- Dynamically populated section pills -->
+        </div>
+
+        <!-- Main Workspace: Left/Center Question Area + Right Palette Sidebar -->
+        <div class="flex-1 flex overflow-hidden relative">
+            
+            <!-- Question Area & Bottom Action Bar -->
+            <main class="flex-1 flex flex-col h-full overflow-hidden">
+                <!-- Scrollable Question Content -->
+                <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+                    <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xs border border-slate-200/90 p-5 sm:p-8">
+                        
+                        <!-- Question Top Metadata Bar -->
+                        <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-5 border-b border-slate-100">
+                            <div class="flex items-center gap-2">
+                                <span id="q-number-badge" class="px-3 py-1 rounded-lg bg-indigo-600 text-white font-bold text-xs sm:text-sm">
+                                    Q1
+                                </span>
+                                <span id="q-section-badge" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-medium text-xs">
+                                    Quantitative
+                                </span>
+                                <span id="q-type-badge" class="px-2.5 py-1 rounded-lg bg-violet-50 text-violet-700 font-medium text-xs uppercase">
+                                    MCQ
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2 text-xs font-medium">
+                                <span id="q-marks-badge" class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                                    +1 Mark
+                                </span>
+                                <span id="q-neg-badge" class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200/60">
+                                    -0 Negative
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Question Stem / Text -->
+                        <div id="q-text-display" class="text-base sm:text-lg text-slate-900 font-medium leading-relaxed whitespace-pre-line mb-6 select-text">
+                            Loading question...
+                        </div>
+
+                        <!-- Dynamic Answer Input Area (MCQ / Numeric / Text) -->
+                        <div id="q-input-container" class="space-y-3">
+                            <!-- Populated dynamically by renderCurrentQuestion() -->
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Bottom Navigation Bar (Large Touch Targets for Mobile/Tablet) -->
+                <footer class="bg-white border-t border-slate-200 px-3 sm:px-6 py-3 shrink-0">
+                    <div class="max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-2">
+                        <!-- Left Utility Actions -->
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="toggleMarkForReview()" id="btn-mark-review"
+                                class="px-3 sm:px-4 py-2.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-800 font-semibold text-xs sm:text-sm transition flex items-center gap-1.5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                                <span id="mark-review-text">Mark for Review</span>
+                            </button>
+
+                            <button type="button" onclick="clearCurrentResponse()"
+                                class="px-3 sm:px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 font-semibold text-xs sm:text-sm transition">
+                                Clear
+                            </button>
+                        </div>
+
+                        <!-- Right Prev / Next Navigation -->
+                        <div class="flex items-center gap-2 ml-auto">
+                            <button type="button" id="btn-prev-q" onclick="navigateQuestion(-1)"
+                                class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none text-slate-700 font-semibold text-xs sm:text-sm transition flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                <span>Prev</span>
+                            </button>
+
+                            <button type="button" id="btn-next-q" onclick="navigateQuestion(1)"
+                                class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-xs transition flex items-center gap-1">
+                                <span id="btn-next-text">Save & Next</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </footer>
+            </main>
+
+            <!-- Mobile Drawer Backdrop -->
+            <div id="palette-backdrop" onclick="toggleMobilePalette()" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden"></div>
+
+            <!-- Question Palette Sidebar (Fixed on Desktop, Slide-over Drawer on Mobile/Tablet) -->
+            <aside id="palette-sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-72 sm:w-80 bg-white border-r lg:border-r-0 lg:border-l border-slate-200 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out shrink-0">
+                <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+                    <h3 class="font-bold text-slate-800 text-sm">Question Palette</h3>
+                    <button type="button" onclick="toggleMobilePalette()" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:bg-slate-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <!-- Status Legend -->
+                <div class="p-3.5 bg-slate-50 border-b border-slate-200 grid grid-cols-2 gap-2 text-xs">
+                    <div class="flex items-center gap-2">
+                        <span id="legend-answered" class="w-6 h-6 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-[11px]">0</span>
+                        <span class="text-slate-600">Answered</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="legend-unanswered" class="w-6 h-6 rounded-lg bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-[11px]">0</span>
+                        <span class="text-slate-600">Not Answered</span>
+                    </div>
+                    <div class="flex items-center gap-2 col-span-2">
+                        <span id="legend-review" class="w-6 h-6 rounded-lg bg-purple-600 text-white font-bold flex items-center justify-center text-[11px]">0</span>
+                        <span class="text-slate-600">Marked for Review</span>
+                    </div>
+                </div>
+
+                <!-- Grid of Question Numbers -->
+                <div class="flex-1 overflow-y-auto p-4">
+                    <div id="palette-grid" class="grid grid-cols-5 gap-2.5">
+                        <!-- Dynamically populated buttons -->
+                    </div>
+                </div>
+
+                <!-- Sidebar Footer -->
+                <div class="p-4 border-t border-slate-200 bg-slate-50 space-y-2">
+                    <button type="button" onclick="promptSubmitTest()" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-xs transition">
+                        Finish & Submit Exam
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 3: RESULTS & DETAILED SCORECARD                                  -->
+    <!-- ===================================================================== -->
+    <div id="view-results" class="hidden flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
+        <div class="max-w-4xl mx-auto space-y-6">
+            
+            <!-- Top Scorecard Banner -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-800 p-6 sm:p-8 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full bg-white/15 text-xs font-semibold uppercase tracking-wider mb-2">Official Scorecard</span>
+                        <h1 id="result-test-title" class="text-2xl sm:text-3xl font-bold">Aptitude Assessment Results</h1>
+                        <p class="text-indigo-100 text-sm mt-1">Candidate: <strong id="result-candidate-name" class="text-white">Friend</strong> • Completed on <span id="result-timestamp"></span></p>
+                    </div>
+                    <!-- Big Score Circle/Card -->
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:px-6 text-center shrink-0">
+                        <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold">Total Score</div>
+                        <div class="text-3xl sm:text-4xl font-extrabold mt-1">
+                            <span id="result-score-obtained">0</span>
+                            <span class="text-lg font-normal text-indigo-200">/ <span id="result-score-max">0</span></span>
+                        </div>
+                        <div id="result-percentage-badge" class="inline-block mt-1.5 px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-200 text-xs font-semibold">
+                            0% Score
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Metric Cards -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 bg-white">
+                    <div class="p-4 sm:p-5 text-center">
+                        <div class="text-xs font-semibold uppercase text-slate-400">Accuracy</div>
+                        <div id="stat-accuracy" class="text-xl sm:text-2xl font-bold text-slate-800 mt-1">0%</div>
+                    </div>
+                    <div class="p-4 sm:p-5 text-center">
+                        <div class="text-xs font-semibold uppercase text-emerald-600">Correct</div>
+                        <div id="stat-correct" class="text-xl sm:text-2xl font-bold text-emerald-600 mt-1">0</div>
+                    </div>
+                    <div class="p-4 sm:p-5 text-center">
+                        <div class="text-xs font-semibold uppercase text-rose-600">Incorrect</div>
+                        <div id="stat-incorrect" class="text-xl sm:text-2xl font-bold text-rose-600 mt-1">0</div>
+                    </div>
+                    <div class="p-4 sm:p-5 text-center">
+                        <div class="text-xs font-semibold uppercase text-slate-500">Skipped</div>
+                        <div id="stat-skipped" class="text-xl sm:text-2xl font-bold text-slate-600 mt-1">0</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Bar -->
+                <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="retakeTest()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold shadow-xs transition flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            Retake Test
+                        </button>
+                        <button type="button" onclick="exportResultsReport()" class="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs sm:text-sm font-semibold transition flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            Download Report (JSON)
+                        </button>
+                    </div>
+                    <button type="button" onclick="logoutToHome()" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-200/70 text-xs sm:text-sm font-semibold transition">
+                        Back to Login
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question-by-Question Review Section -->
+            <div class="space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <h2 class="text-lg font-bold text-slate-900">Detailed Question Review & Solutions</h2>
+                    <!-- Filter Pills -->
+                    <div class="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 self-start">
+                        <button type="button" onclick="filterReview('ALL')" id="rev-filter-ALL" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition">All</button>
+                        <button type="button" onclick="filterReview('CORRECT')" id="rev-filter-CORRECT" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">Correct</button>
+                        <button type="button" onclick="filterReview('INCORRECT')" id="rev-filter-INCORRECT" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">Incorrect</button>
+                        <button type="button" onclick="filterReview('SKIPPED')" id="rev-filter-SKIPPED" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">Skipped</button>
+                    </div>
+                </div>
+
+                <!-- Review Cards List -->
+                <div id="review-list-container" class="space-y-4 pb-12">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- QUESTION MANAGER / JSON IMPORTER MODAL (FOR CREATOR / ADMIN)          -->
+    <!-- ===================================================================== -->
+    <div id="manager-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6">
+        <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-fade-in">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+                <div>
+                    <h3 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                        <span>Question Bank & JSON Manager</span>
+                        <span class="px-2 py-0.5 text-[11px] rounded-md bg-indigo-500/30 text-indigo-200 font-mono">questions.json</span>
+                    </h3>
+                    <p class="text-xs text-slate-400">Paste questions from AI, upload a file, or add questions visually</p>
+                </div>
+                <button type="button" onclick="closeManagerModal()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Modal Navigation Tabs -->
+            <div class="bg-slate-100 px-6 pt-3 border-b border-slate-200 flex gap-2 overflow-x-auto shrink-0">
+                <button type="button" onclick="switchManagerTab('json')" id="mgr-tab-json" class="px-4 py-2 rounded-t-xl font-semibold text-xs sm:text-sm bg-white text-indigo-600 border-t border-x border-slate-200">
+                    1. Raw JSON Editor / Paste
+                </button>
+                <button type="button" onclick="switchManagerTab('visual')" id="mgr-tab-visual" class="px-4 py-2 rounded-t-xl font-semibold text-xs sm:text-sm text-slate-600 hover:text-slate-900">
+                    2. Visual "Add Question" Builder
+                </button>
+                <button type="button" onclick="switchManagerTab('schema')" id="mgr-tab-schema" class="px-4 py-2 rounded-t-xl font-semibold text-xs sm:text-sm text-slate-600 hover:text-slate-900">
+                    3. AI Prompt & JSON Schema Guide
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto flex-1 space-y-4">
+                
+                <!-- TAB 1: RAW JSON EDITOR & FILE UPLOAD -->
+                <div id="mgr-panel-json" class="space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 bg-indigo-50/70 border border-indigo-100 p-3.5 rounded-2xl">
+                        <div class="text-xs text-indigo-950">
+                            <strong>Workflow Tip:</strong> Paste your JSON below and click <strong>"Apply & Save JSON"</strong>, or download <code class="font-mono font-semibold">questions.json</code> to commit to your GitHub repo.
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold shadow-2xs transition">
+                                <span>Upload .json File</span>
+                                <input type="file" accept=".json,application/json" class="hidden" onchange="handleJsonFileUpload(event)">
+                            </label>
+                            <button type="button" onclick="copyFullJsonToClipboard()" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold shadow-2xs transition">
+                                Copy Full JSON
+                            </button>
+                            <button type="button" onclick="downloadQuestionsJson()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition">
+                                Download questions.json
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-500">Complete Test JSON Data</label>
+                            <button type="button" onclick="resetToDefaultData()" class="text-xs text-rose-600 hover:underline font-medium">Reset to Built-in Demo Questions</button>
+                        </div>
+                        <textarea id="json-editor-textarea" rows="14" spellcheck="false"
+                            class="w-full p-4 rounded-2xl border border-slate-300 bg-slate-900 text-emerald-300 font-mono text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                    </div>
+                </div>
+
+                <!-- TAB 2: VISUAL QUESTION BUILDER -->
+                <div id="mgr-panel-visual" class="hidden space-y-4">
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+                        <h4 class="font-bold text-slate-800 text-sm">Add a New Question to Current Test</h4>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Question Type</label>
+                                <select id="vq-type" onchange="toggleVisualBuilderFields()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm">
+                                    <option value="mcq">Multiple Choice (MCQ)</option>
+                                    <option value="numeric">Numerical Answer (NAT)</option>
+                                    <option value="text">Short Text Answer</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Section / Category</label>
+                                <input type="text" id="vq-section" value="Quantitative" placeholder="e.g., Quantitative" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Marks (+)</label>
+                                    <input type="number" step="any" id="vq-marks" value="1" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Negative (-)</label>
+                                    <input type="number" step="any" id="vq-neg" value="0" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Question Text</label>
+                            <textarea id="vq-question" rows="3" placeholder="Type the question problem statement here..." class="w-full p-3 rounded-xl border border-slate-300 bg-white text-sm"></textarea>
+                        </div>
+
+                        <!-- MCQ Options Box -->
+                        <div id="vq-mcq-box" class="space-y-2">
+                            <label class="block text-xs font-semibold text-slate-600">Options (Select the radio button next to the correct option)</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <div class="flex items-center gap-2">
+                                    <input type="radio" name="vq-correct-opt" value="0" checked class="w-4 h-4 text-indigo-600">
+                                    <input type="text" id="vq-opt-0" placeholder="Option A" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm">
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="radio" name="vq-correct-opt" value="1" class="w-4 h-4 text-indigo-600">
+                                    <input type="text" id="vq-opt-1" placeholder="Option B" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm">
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="radio" name="vq-correct-opt" value="2" class="w-4 h-4 text-indigo-600">
+                                    <input type="text" id="vq-opt-2" placeholder="Option C" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm">
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="radio" name="vq-correct-opt" value="3" class="w-4 h-4 text-indigo-600">
+                                    <input type="text" id="vq-opt-3" placeholder="Option D" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Numeric / Text Answer Box -->
+                        <div id="vq-direct-box" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Correct Answer</label>
+                                <input type="text" id="vq-direct-answer" placeholder="e.g., 42.5 or Paris" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm">
+                            </div>
+                            <div id="vq-tolerance-wrap">
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Numeric Tolerance (±)</label>
+                                <input type="number" step="any" id="vq-tolerance" value="0.01" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Solution Explanation (Optional)</label>
+                            <textarea id="vq-explanation" rows="2" placeholder="Explain how to solve this question..." class="w-full p-3 rounded-xl border border-slate-300 bg-white text-sm"></textarea>
+                        </div>
+
+                        <button type="button" onclick="appendVisualQuestionToJson()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-xs transition">
+                            + Append Question to JSON
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB 3: AI PROMPT & SCHEMA GUIDE -->
+                <div id="mgr-panel-schema" class="hidden space-y-4">
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-950 space-y-2 leading-relaxed">
+                        <div class="font-bold text-sm flex items-center justify-between">
+                            <span>How to ask AI to extract questions from any website for you:</span>
+                            <button type="button" onclick="copyAiPromptTemplate()" class="px-3 py-1 rounded-lg bg-amber-600 text-white font-semibold text-xs hover:bg-amber-700">Copy AI Prompt</button>
+                        </div>
+                        <p>Whenever you want questions 1 to 10 from a website or PDF, copy the prompt below and send it to me (or any AI):</p>
+                        <pre id="ai-prompt-template" class="bg-white p-3 rounded-xl border border-amber-200 font-mono text-[11px] whitespace-pre-wrap text-slate-800 select-all">Extract questions 1 to 10 from [PASTE URL OR TEXT] and output ONLY valid JSON matching this exact structure for my aptitude website:
+{
+  "title": "Custom Aptitude Test",
+  "durationMinutes": 20,
+  "questions": [
+    {
+      "id": 1,
+      "type": "mcq",
+      "section": "Quantitative",
+      "question": "Question text here?",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "answer": 0,
+      "marks": 1,
+      "negativeMarks": 0,
+      "explanation": "Step-by-step explanation"
+    },
+    {
+      "id": 2,
+      "type": "numeric",
+      "section": "Quantitative",
+      "question": "Numerical question text?",
+      "answer": 25.5,
+      "tolerance": 0.01,
+      "marks": 2,
+      "negativeMarks": 0,
+      "explanation": "Calculation steps"
+    }
+  ]
+}</pre>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
+                <span id="mgr-status-msg" class="text-xs text-slate-500">Changes are saved in browser storage & ready for export.</span>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="closeManagerModal()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-200/60 transition">Close</button>
+                    <button type="button" onclick="applyJsonFromEditor()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-xs transition">
+                        Apply & Save JSON
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- APPLICATION JAVASCRIPT & DEFAULT JSON DATA                            -->
+    <!-- ===================================================================== -->
+    <script>
+        /**
+         * ====================================================================
+         * 1. DEFAULT TEST CONFIGURATION & QUESTIONS JSON
+         * ====================================================================
+         * When hosting on GitHub Pages, you can either:
+         * A) Edit this `DEFAULT_TEST_DATA` object directly inside `index.html`, OR
+         * B) Place a `questions.json` file in the same folder as `index.html`.
+         *    The website automatically fetches `./questions.json` if present!
+         */
+        const DEFAULT_TEST_DATA = {
+            title: "Comprehensive Aptitude & Logic Assessment",
+            durationMinutes: 25,
+            users: [
+                { username: "friend", password: "password123", name: "My Friend", role: "candidate" },
+                { username: "friend", password: "pass123", name: "My Friend", role: "candidate" },
+                { username: "student", password: "123", name: "Demo Student", role: "candidate" },
+                { username: "admin", password: "admin123", name: "Test Creator (Admin)", role: "admin" }
+            ],
+            questions: [
+                {
+                    id: 1,
+                    type: "mcq",
+                    section: "Quantitative",
+                    question: "A train running at the speed of 60 km/hr crosses a pole in 9 seconds. What is the length of the train?",
+                    options: ["120 metres", "180 metres", "324 metres", "150 metres"],
+                    answer: 3, // 0-based index (3 = "150 metres") or exact option text
+                    marks: 2,
+                    negativeMarks: 0.5,
+                    explanation: "Speed = 60 * (5/18) m/sec = 50/3 m/sec.\nLength of the train = (Speed × Time) = (50/3) × 9 = 150 metres."
+                },
+                {
+                    id: 2,
+                    type: "numeric",
+                    section: "Quantitative",
+                    question: "If a sum of money at simple interest doubles in 8 years, at what rate percent per annum is it invested? (Enter only the number)",
+                    answer: 12.5,
+                    tolerance: 0.05,
+                    marks: 2,
+                    negativeMarks: 0,
+                    explanation: "Let Principal = P. Then Simple Interest (SI) = P, and Time (T) = 8 years.\nRate = (100 × SI) / (P × T) = (100 × P) / (P × 8) = 12.5% per annum."
+                },
+                {
+                    id: 3,
+                    type: "mcq",
+                    section: "Logical Reasoning",
+                    question: "Look at this series: 7, 10, 8, 11, 9, 12, ... What number should come next?",
+                    options: ["7", "10", "12", "13"],
+                    answer: 1, // Index 1 -> "10"
+                    marks: 1,
+                    negativeMarks: 0.25,
+                    explanation: "This is an alternating addition and subtraction series. First, 3 is added, then 2 is subtracted (+3, -2, +3, -2...). Thus, 12 - 2 = 10."
+                },
+                {
+                    id: 4,
+                    type: "numeric",
+                    section: "Quantitative",
+                    question: "Batsman A scored 85 runs in his 17th innings, thereby increasing his average by 3 runs. What is his average after the 17th innings?",
+                    answer: 37,
+                    tolerance: 0,
+                    marks: 2,
+                    negativeMarks: 0,
+                    explanation: "Let average after 16 innings be x.\nTotal runs after 16 innings = 16x.\nAfter 17th innings: 16x + 85 = 17(x + 3) => 16x + 85 = 17x + 51 => x = 34.\nNew average after 17th innings = 34 + 3 = 37."
+                },
+                {
+                    id: 5,
+                    type: "text",
+                    section: "Verbal & Analytical",
+                    question: "Rearrange the letters 'C I F A I P C' to form the name of an Ocean. Type the exact name of the ocean below:",
+                    answer: "Pacific",
+                    marks: 1,
+                    negativeMarks: 0,
+                    explanation: "Rearranging the letters C-I-F-A-I-P-C spells PACIFIC (Pacific Ocean)."
+                },
+                {
+                    id: 6,
+                    type: "mcq",
+                    section: "Logical Reasoning",
+                    question: "Statements:\n1. All mangoes are golden in colour.\n2. No golden-coloured things are cheap.\n\nConclusions:\nI. All mangoes are cheap.\nII. Golden-coloured mangoes are not cheap.",
+                    options: [
+                        "Only conclusion I follows",
+                        "Only conclusion II follows",
+                        "Either I or II follows",
+                        "Both I and II follow"
+                    ],
+                    answer: 1,
+                    marks: 2,
+                    negativeMarks: 0.5,
+                    explanation: "Clearly, the mango must be golden in colour (from 1) and therefore cannot be cheap (from 2). Hence, only conclusion II follows."
+                }
+            ]
+        };
+
+        // ====================================================================
+        // 2. APPLICATION STATE
+        // ====================================================================
+        const STORAGE_KEY = "aptitude_portal_custom_json_v1";
+        let testData = JSON.parse(JSON.stringify(DEFAULT_TEST_DATA));
+        let currentUser = null;
+        let currentQuestionIndex = 0;
+        let activeSectionFilter = "ALL";
+        let activeReviewFilter = "ALL";
+
+        // Per-question user state: { answer: any, markedForReview: boolean, visited: boolean }
+        let userResponses = {};
+        let timerInterval = null;
+        let remainingSeconds = 0;
+        let lastEvaluationReport = null;
+
+        // ====================================================================
+        // 3. INITIALIZATION (Loads LocalStorage or external questions.json)
+        // ====================================================================
+        window.addEventListener("DOMContentLoaded", async () => {
+            await initializeTestData();
+            updateLoginScreenMetadata();
+        });
+
+        async function initializeTestData() {
+            // 1. Check if user saved custom JSON in LocalStorage
+            const savedLocal = localStorage.getItem(STORAGE_KEY);
+            if (savedLocal) {
+                try {
+                    const parsed = JSON.parse(savedLocal);
+                    if (parsed && Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+                        testData = normalizeTestData(parsed);
+                        setSourceBadge("Custom Saved JSON");
+                        return;
+                    }
+                } catch (e) {
+                    console.warn("Could not parse localStorage JSON, falling back.", e);
+                }
+            }
+
+            // 2. Attempt to fetch `./questions.json` from the same GitHub Pages folder
+            try {
+                const res = await fetch("./questions.json", { cache: "no-store" });
+                if (res.ok) {
+                    const externalJson = await res.json();
+                    if (externalJson && Array.isArray(externalJson.questions) && externalJson.questions.length > 0) {
+                        testData = normalizeTestData(externalJson);
+                        setSourceBadge("Loaded questions.json");
+                        return;
+                    }
+                }
+            } catch (err) {
+                // Expected when running locally or if questions.json isn't uploaded yet
+            }
+
+            // 3. Fallback to built-in DEFAULT_TEST_DATA
+            testData = normalizeTestData(DEFAULT_TEST_DATA);
+            setSourceBadge("Built-in Set");
+        }
+
+        function normalizeTestData(raw) {
+            return {
+                title: raw.title || "Aptitude Assessment",
+                durationMinutes: Number(raw.durationMinutes) > 0 ? Number(raw.durationMinutes) : 30,
+                users: Array.isArray(raw.users) && raw.users.length > 0 ? raw.users : DEFAULT_TEST_DATA.users,
+                questions: (raw.questions || []).map((q, idx) => ({
+                    id: q.id !== undefined ? q.id : idx + 1,
+                    type: (q.type || "mcq").toLowerCase(),
+                    section: q.section || "General",
+                    question: q.question || "",
+                    options: Array.isArray(q.options) ? q.options : [],
+                    answer: q.answer,
+                    tolerance: q.tolerance !== undefined ? Number(q.tolerance) : 0.01,
+                    marks: q.marks !== undefined ? Number(q.marks) : 1,
+                    negativeMarks: q.negativeMarks !== undefined ? Math.abs(Number(q.negativeMarks)) : 0,
+                    explanation: q.explanation || ""
+                }))
+            };
+        }
+
+        function setSourceBadge(text) {
+            const badge = document.getElementById("meta-source-badge");
+            if (badge) badge.textContent = text;
+        }
+
+        function updateLoginScreenMetadata() {
+            document.getElementById("login-test-title").textContent = testData.title;
+            document.getElementById("meta-q-count").textContent = testData.questions.length;
+            document.getElementById("meta-duration").textContent = testData.durationMinutes;
+        }
+
+        // ====================================================================
+        // 4. AUTHENTICATION & LOGIN HANDLERS
+        // ====================================================================
+        function togglePasswordVisibility() {
+            const input = document.getElementById("login-password");
+            const btn = input.nextElementSibling;
+            if (input.type === "password") {
+                input.type = "text";
+                btn.textContent = "Hide";
+            } else {
+                input.type = "password";
+                btn.textContent = "Show";
+            }
+        }
+
+        function fillDemoLogin(username, password) {
+            document.getElementById("login-username").value = username;
+            document.getElementById("login-password").value = password;
+            document.getElementById("login-error").classList.add("hidden");
+            showToast(`Filled credentials for "${username}"`, "info");
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const uInput = document.getElementById("login-username").value.trim();
+            const pInput = document.getElementById("login-password").value;
+            const customName = document.getElementById("candidate-custom-name").value.trim();
+
+            // Check against testData.users and DEFAULT_TEST_DATA.users
+            const combinedUsers = [...(testData.users || []), ...DEFAULT_TEST_DATA.users];
+            const matched = combinedUsers.find(
+                u => u.username.toLowerCase() === uInput.toLowerCase() && String(u.password) === String(pInput)
+            );
+
+            if (!matched) {
+                const errBox = document.getElementById("login-error");
+                errBox.classList.remove("hidden");
+                return;
+            }
+
+            document.getElementById("login-error").classList.add("hidden");
+            currentUser = {
+                username: matched.username,
+                name: customName || matched.name || matched.username,
+                role: matched.role || "candidate"
+            };
+
+            startExamSession();
+        }
+
+        function openAdminModalFromLogin() {
+            openManagerModal();
+        }
+
+        // ====================================================================
+        // 5. EXAM SESSION & RENDERING LOGIC
+        // ====================================================================
+        function startExamSession() {
+            if (!testData.questions || testData.questions.length === 0) {
+                showToast("No questions found! Please add questions in the JSON Manager.", "error");
+                openManagerModal();
+                return;
+            }
+
+            // Initialize blank user responses
+            userResponses = {};
+            testData.questions.forEach((_, idx) => {
+                userResponses[idx] = {
+                    answer: null,
+                    markedForReview: false,
+                    visited: false
+                };
+            });
+
+            currentQuestionIndex = 0;
+            activeSectionFilter = "ALL";
+            userResponses[0].visited = true;
+
+            // Update Header UI
+            document.getElementById("exam-header-title").textContent = testData.title;
+            document.getElementById("exam-candidate-name").textContent = currentUser.name;
+
+            const adminBtn = document.getElementById("header-admin-btn");
+            if (currentUser.role === "admin") {
+                adminBtn.classList.remove("hidden");
+                adminBtn.classList.add("inline-flex");
+            } else {
+                adminBtn.classList.add("hidden");
+                adminBtn.classList.remove("inline-flex");
+            }
+
+            // Switch Views
+            document.getElementById("view-login").classList.add("hidden");
+            document.getElementById("view-results").classList.add("hidden");
+            document.getElementById("view-test").classList.remove("hidden");
+
+            renderSectionTabs();
+            renderCurrentQuestion();
+            renderPalette();
+            startTimer(testData.durationMinutes * 60);
+        }
+
+        function startTimer(totalSeconds) {
+            if (timerInterval) clearInterval(timerInterval);
+            remainingSeconds = totalSeconds;
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                remainingSeconds--;
+                updateTimerDisplay();
+                if (remainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    showToast("Time is up! Submitting your test automatically.", "info");
+                    finalizeAndScoreTest();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(Math.max(0, remainingSeconds) / 60);
+            const secs = Math.max(0, remainingSeconds) % 60;
+            const display = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+            const el = document.getElementById("timer-display");
+            const box = document.getElementById("timer-box");
+            el.textContent = display;
+
+            if (remainingSeconds <= 60) {
+                box.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-100 border border-rose-300 text-rose-700 font-mono text-xs sm:text-sm font-bold animate-pulse";
+            } else {
+                box.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 font-mono text-xs sm:text-sm font-semibold";
+            }
+        }
+
+        function renderSectionTabs() {
+            const sections = ["ALL", ...new Set(testData.questions.map(q => q.section || "General"))];
+            const bar = document.getElementById("section-tabs-bar");
+
+            if (sections.length <= 2) {
+                bar.classList.add("hidden");
+                return;
+            }
+            bar.classList.remove("hidden");
+            bar.innerHTML = sections.map(sec => {
+                const isActive = activeSectionFilter === sec;
+                const count = sec === "ALL"
+                    ? testData.questions.length
+                    : testData.questions.filter(q => (q.section || "General") === sec).length;
+                return `
+                    <button type="button" onclick="selectSectionTab('${escapeHtml(sec)}')"
+                        class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
+                            isActive
+                                ? 'bg-indigo-600 text-white shadow-2xs'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }">
+                        <span>${sec === 'ALL' ? 'All Sections' : escapeHtml(sec)}</span>
+                        <span class="px-1.5 py-0.2 rounded-md text-[10px] ${isActive ? 'bg-indigo-800 text-indigo-100' : 'bg-slate-200 text-slate-700'}">${count}</span>
+                    </button>
+                `;
+            }).join("");
+        }
+
+        function selectSectionTab(sec) {
+            activeSectionFilter = sec;
+            renderSectionTabs();
+            // Jump to first question in that section if current question isn't in it
+            if (sec !== "ALL") {
+                const currentQ = testData.questions[currentQuestionIndex];
+                if ((currentQ.section || "General") !== sec) {
+                    const firstIdx = testData.questions.findIndex(q => (q.section || "General") === sec);
+                    if (firstIdx !== -1) jumpToQuestion(firstIdx);
+                }
+            }
+            renderPalette();
+        }
+
+        function renderCurrentQuestion() {
+            const q = testData.questions[currentQuestionIndex];
+            const state = userResponses[currentQuestionIndex];
+            state.visited = true;
+
+            // Update Metadata Badges
+            document.getElementById("q-number-badge").textContent = `Question ${currentQuestionIndex + 1} of ${testData.questions.length}`;
+            document.getElementById("q-section-badge").textContent = q.section || "General";
+            
+            const typeLabels = { mcq: "Multiple Choice", numeric: "Numerical (NAT)", text: "Short Answer" };
+            document.getElementById("q-type-badge").textContent = typeLabels[q.type] || "Question";
+            document.getElementById("q-marks-badge").textContent = `+${q.marks} ${q.marks === 1 ? 'Mark' : 'Marks'}`;
+            document.getElementById("q-neg-badge").textContent = q.negativeMarks > 0 ? `-${q.negativeMarks} Negative` : "No Negative";
+
+            // Question Text
+            document.getElementById("q-text-display").textContent = q.question;
+
+            // Mark for Review Button State
+            const reviewBtn = document.getElementById("btn-mark-review");
+            const reviewTxt = document.getElementById("mark-review-text");
+            if (state.markedForReview) {
+                reviewBtn.className = "px-3 sm:px-4 py-2.5 rounded-xl border border-purple-600 bg-purple-600 text-white font-semibold text-xs sm:text-sm transition flex items-center gap-1.5";
+                reviewTxt.textContent = "Marked for Review";
+            } else {
+                reviewBtn.className = "px-3 sm:px-4 py-2.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-800 font-semibold text-xs sm:text-sm transition flex items-center gap-1.5";
+                reviewTxt.textContent = "Mark for Review";
+            }
+
+            // Render Input Controls by Type
+            const container = document.getElementById("q-input-container");
+            if (q.type === "mcq") {
+                container.innerHTML = (q.options || []).map((optText, optIdx) => {
+                    const isSelected = state.answer === optIdx;
+                    const optionLetter = String.fromCharCode(65 + optIdx);
+                    return `
+                        <button type="button" onclick="selectMcqOption(${optIdx})"
+                            class="w-full text-left p-4 rounded-2xl border-2 transition flex items-start gap-3.5 group ${
+                                isSelected
+                                    ? 'border-indigo-600 bg-indigo-50/70 shadow-2xs'
+                                    : 'border-slate-200 hover:border-indigo-300 hover:bg-slate-50/70 bg-white'
+                            }">
+                            <span class="w-7 h-7 rounded-xl font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 transition ${
+                                isSelected
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'bg-slate-100 text-slate-600 group-hover:bg-indigo-100 group-hover:text-indigo-700'
+                            }">
+                                ${optionLetter}
+                            </span>
+                            <span class="text-sm sm:text-base font-medium ${isSelected ? 'text-indigo-950 font-semibold' : 'text-slate-800'} leading-snug">
+                                ${escapeHtml(String(optText))}
+                            </span>
+                        </button>
+                    `;
+                }).join("");
+            } else if (q.type === "numeric") {
+                const val = state.answer !== null && state.answer !== undefined ? state.answer : "";
+                container.innerHTML = `
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 max-w-md space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Enter Numerical Value</label>
+                            <input type="number" step="any" id="nat-input-field" value="${escapeHtml(String(val))}"
+                                placeholder="e.g., 25 or 12.5"
+                                oninput="handleDirectInput(this.value)"
+                                class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 bg-white font-mono text-lg font-bold text-slate-900 focus:outline-none focus:border-indigo-600 transition">
+                        </div>
+                        <!-- Touch-friendly Virtual Numpad for Phones/Tablets -->
+                        <div class="grid grid-cols-4 gap-2 pt-1">
+                            ${['7','8','9','⌫','4','5','6','-','1','2','3','.','0','Clear'].map(key => {
+                                const spanClass = key === 'Clear' ? 'col-span-3 bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100' : 'bg-white text-slate-800 border-slate-200 hover:bg-slate-100';
+                                return `<button type="button" onclick="tapVirtualKeypad('${key}')"
+                                    class="py-2.5 rounded-xl border font-mono font-bold text-sm shadow-2xs active:scale-95 transition ${spanClass}">
+                                    ${key}
+                                </button>`;
+                            }).join("")}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Short text answer
+                const val = state.answer !== null && state.answer !== undefined ? state.answer : "";
+                container.innerHTML = `
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 max-w-lg">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Type Your Short Answer</label>
+                        <input type="text" id="text-input-field" value="${escapeHtml(String(val))}"
+                            placeholder="Type your answer here..."
+                            oninput="handleDirectInput(this.value)"
+                            class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-base font-medium text-slate-900 focus:outline-none focus:border-indigo-600 transition">
+                        <p class="text-xs text-slate-400 mt-2">Matching is case-insensitive and ignores leading/trailing spaces.</p>
+                    </div>
+                `;
+            }
+
+            // Prev / Next Button states
+            document.getElementById("btn-prev-q").disabled = currentQuestionIndex === 0;
+            const nextTxt = document.getElementById("btn-next-text");
+            nextTxt.textContent = currentQuestionIndex === testData.questions.length - 1 ? "First Question" : "Save & Next";
+        }
+
+        function selectMcqOption(optIdx) {
+            userResponses[currentQuestionIndex].answer = optIdx;
+            renderCurrentQuestion();
+            renderPalette();
+        }
+
+        function handleDirectInput(val) {
+            const trimmed = String(val).trim();
+            userResponses[currentQuestionIndex].answer = trimmed === "" ? null : trimmed;
+            renderPalette();
+        }
+
+        function tapVirtualKeypad(key) {
+            const input = document.getElementById("nat-input-field");
+            if (!input) return;
+            let cur = String(input.value);
+            if (key === "Clear") {
+                cur = "";
+            } else if (key === "⌫") {
+                cur = cur.slice(0, -1);
+            } else if (key === "-") {
+                cur = cur.startsWith("-") ? cur.slice(1) : "-" + cur;
+            } else if (key === ".") {
+                if (!cur.includes(".")) cur += ".";
+            } else {
+                cur += key;
+            }
+            input.value = cur;
+            handleDirectInput(cur);
+        }
+
+        function clearCurrentResponse() {
+            userResponses[currentQuestionIndex].answer = null;
+            renderCurrentQuestion();
+            renderPalette();
+        }
+
+        function toggleMarkForReview() {
+            userResponses[currentQuestionIndex].markedForReview = !userResponses[currentQuestionIndex].markedForReview;
+            renderCurrentQuestion();
+            renderPalette();
+        }
+
+        function navigateQuestion(delta) {
+            let nextIdx = currentQuestionIndex + delta;
+            if (nextIdx >= testData.questions.length) nextIdx = 0;
+            if (nextIdx < 0) nextIdx = 0;
+            jumpToQuestion(nextIdx);
+        }
+
+        function jumpToQuestion(idx) {
+            currentQuestionIndex = idx;
+            renderCurrentQuestion();
+            renderPalette();
+            // Close mobile drawer if open
+            const sidebar = document.getElementById("palette-sidebar");
+            if (!sidebar.classList.contains("-translate-x-full")) {
+                toggleMobilePalette();
+            }
+        }
+
+        function renderPalette() {
+            const grid = document.getElementById("palette-grid");
+            let answeredCount = 0;
+            let unansweredCount = 0;
+            let reviewCount = 0;
+
+            grid.innerHTML = testData.questions.map((q, idx) => {
+                const st = userResponses[idx] || { answer: null, markedForReview: false };
+                const hasAns = st.answer !== null && st.answer !== undefined && String(st.answer).trim() !== "";
+
+                if (hasAns) answeredCount++;
+                else unansweredCount++;
+                if (st.markedForReview) reviewCount++;
+
+                // Filter visibility by section if selected
+                const hiddenBySection = activeSectionFilter !== "ALL" && (q.section || "General") !== activeSectionFilter;
+
+                let btnStyle = "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200";
+                if (st.markedForReview) {
+                    btnStyle = "bg-purple-600 text-white border-purple-600";
+                } else if (hasAns) {
+                    btnStyle = "bg-emerald-600 text-white border-emerald-600";
+                }
+
+                const currentRing = idx === currentQuestionIndex ? "ring-2 ring-offset-2 ring-indigo-600" : "";
+
+                return `
+                    <button type="button" onclick="jumpToQuestion(${idx})"
+                        class="${hiddenBySection ? 'hidden' : 'flex'} h-10 w-full rounded-xl border font-bold text-xs items-center justify-center transition relative ${btnStyle} ${currentRing}">
+                        ${idx + 1}
+                        ${st.markedForReview && hasAns ? '<span class="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 border-2 border-white"></span>' : ''}
+                    </button>
+                `;
+            }).join("");
+
+            document.getElementById("legend-answered").textContent = answeredCount;
+            document.getElementById("legend-unanswered").textContent = unansweredCount;
+            document.getElementById("legend-review").textContent = reviewCount;
+        }
+
+        function toggleMobilePalette() {
+            const sidebar = document.getElementById("palette-sidebar");
+            const backdrop = document.getElementById("palette-backdrop");
+            const isClosed = sidebar.classList.contains("-translate-x-full");
+            if (isClosed) {
+                sidebar.classList.remove("-translate-x-full");
+                backdrop.classList.remove("hidden");
+            } else {
+                sidebar.classList.add("-translate-x-full");
+                backdrop.classList.add("hidden");
+            }
+        }
+
+        // ====================================================================
+        // 6. SUBMISSION & EVALUATION ENGINE
+        // ====================================================================
+        function promptSubmitTest() {
+            let answered = 0;
+            let review = 0;
+            const total = testData.questions.length;
+
+            Object.values(userResponses).forEach(st => {
+                if (st.answer !== null && st.answer !== undefined && String(st.answer).trim() !== "") answered++;
+                if (st.markedForReview) review++;
+            });
+
+            const skipped = total - answered;
+
+            showConfirmModal({
+                title: "Submit Aptitude Test?",
+                message: "Are you sure you want to finish and submit your responses for final grading?",
+                statsHtml: `
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                        <div class="bg-emerald-50 text-emerald-800 p-2 rounded-lg"><strong>${answered}</strong><br>Answered</div>
+                        <div class="bg-slate-200/70 text-slate-700 p-2 rounded-lg"><strong>${skipped}</strong><br>Unattempted</div>
+                        <div class="bg-purple-50 text-purple-800 p-2 rounded-lg"><strong>${review}</strong><br>Marked Review</div>
+                    </div>
+                `,
+                confirmText: "Yes, Submit Test",
+                onConfirm: () => finalizeAndScoreTest()
+            });
+        }
+
+        function evaluateQuestion(q, userRawAns) {
+            const isSkipped = userRawAns === null || userRawAns === undefined || String(userRawAns).trim() === "";
+            if (isSkipped) {
+                return { status: "SKIPPED", isCorrect: false, marksAwarded: 0, formattedUserAns: "Not Attempted", formattedCorrectAns: formatCorrectAnswer(q) };
+            }
+
+            let isCorrect = false;
+            if (q.type === "mcq") {
+                const userIdx = Number(userRawAns);
+                // Support answer as 0-based option index OR exact string match
+                if (typeof q.answer === "number" || !isNaN(Number(q.answer))) {
+                    isCorrect = userIdx === Number(q.answer);
+                } else {
+                    const selectedText = String(q.options[userIdx] || "").trim().toLowerCase();
+                    isCorrect = selectedText === String(q.answer).trim().toLowerCase();
+                }
+            } else if (q.type === "numeric") {
+                const uNum = parseFloat(String(userRawAns).trim());
+                const cNum = parseFloat(String(q.answer).trim());
+                const tol = q.tolerance !== undefined ? Number(q.tolerance) : 0.01;
+                if (!isNaN(uNum) && !isNaN(cNum)) {
+                    isCorrect = Math.abs(uNum - cNum) <= tol;
+                }
+            } else {
+                // Short text (case-insensitive trimmed match)
+                const uStr = String(userRawAns).trim().toLowerCase();
+                const cStr = String(q.answer).trim().toLowerCase();
+                isCorrect = uStr === cStr;
+            }
+
+            const marksAwarded = isCorrect ? Number(q.marks) : -Math.abs(Number(q.negativeMarks || 0));
+
+            let formattedUserAns = String(userRawAns);
+            if (q.type === "mcq") {
+                const idx = Number(userRawAns);
+                const letter = String.fromCharCode(65 + idx);
+                formattedUserAns = `(${letter}) ${q.options[idx] !== undefined ? q.options[idx] : userRawAns}`;
+            }
+
+            return {
+                status: isCorrect ? "CORRECT" : "INCORRECT",
+                isCorrect,
+                marksAwarded,
+                formattedUserAns,
+                formattedCorrectAns: formatCorrectAnswer(q)
+            };
+        }
+
+        function formatCorrectAnswer(q) {
+            if (q.type === "mcq") {
+                if (typeof q.answer === "number" || (!isNaN(Number(q.answer)) && q.options[Number(q.answer)] !== undefined)) {
+                    const idx = Number(q.answer);
+                    const letter = String.fromCharCode(65 + idx);
+                    return `(${letter}) ${q.options[idx]}`;
+                }
+                return String(q.answer);
+            }
+            if (q.type === "numeric" && q.tolerance > 0) {
+                return `${q.answer} (±${q.tolerance})`;
+            }
+            return String(q.answer);
+        }
+
+        function finalizeAndScoreTest() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            let totalScore = 0;
+            let maxPossibleScore = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let skippedCount = 0;
+
+            const detailedItems = testData.questions.map((q, idx) => {
+                maxPossibleScore += Number(q.marks);
+                const userRaw = userResponses[idx] ? userResponses[idx].answer : null;
+                const evalRes = evaluateQuestion(q, userRaw);
+
+                totalScore += evalRes.marksAwarded;
+                if (evalRes.status === "CORRECT") correctCount++;
+                else if (evalRes.status === "INCORRECT") incorrectCount++;
+                else skippedCount++;
+
+                return {
+                    index: idx + 1,
+                    question: q,
+                    ...evalRes
+                };
+            });
+
+            // Round score cleanly to 2 decimal places
+            totalScore = Math.round(totalScore * 100) / 100;
+            maxPossibleScore = Math.round(maxPossibleScore * 100) / 100;
+
+            const attemptedCount = correctCount + incorrectCount;
+            const accuracy = attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0;
+            const scorePercentage = maxPossibleScore > 0 ? Math.max(0, Math.round((totalScore / maxPossibleScore) * 100)) : 0;
+
+            lastEvaluationReport = {
+                testTitle: testData.title,
+                candidate: currentUser ? currentUser.name : "Candidate",
+                completedAt: new Date().toLocaleString(),
+                totalScore,
+                maxPossibleScore,
+                scorePercentage,
+                accuracy,
+                correctCount,
+                incorrectCount,
+                skippedCount,
+                items: detailedItems
+            };
+
+            // Populate Results View
+            document.getElementById("result-test-title").textContent = testData.title;
+            document.getElementById("result-candidate-name").textContent = lastEvaluationReport.candidate;
+            document.getElementById("result-timestamp").textContent = lastEvaluationReport.completedAt;
+            document.getElementById("result-score-obtained").textContent = totalScore;
+            document.getElementById("result-score-max").textContent = maxPossibleScore;
+            document.getElementById("result-percentage-badge").textContent = `${scorePercentage}% Overall`;
+
+            document.getElementById("stat-accuracy").textContent = `${accuracy}%`;
+            document.getElementById("stat-correct").textContent = correctCount;
+            document.getElementById("stat-incorrect").textContent = incorrectCount;
+            document.getElementById("stat-skipped").textContent = skippedCount;
+
+            activeReviewFilter = "ALL";
+            renderReviewList();
+
+            // Switch Views
+            document.getElementById("view-test").classList.add("hidden");
+            document.getElementById("view-results").classList.remove("hidden");
+        }
+
+        function filterReview(filterType) {
+            activeReviewFilter = filterType;
+            ["ALL", "CORRECT", "INCORRECT", "SKIPPED"].forEach(type => {
+                const btn = document.getElementById(`rev-filter-${type}`);
+                if (type === filterType) {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition";
+                }
+            });
+            renderReviewList();
+        }
+
+        function renderReviewList() {
+            if (!lastEvaluationReport) return;
+            const container = document.getElementById("review-list-container");
+            const filtered = lastEvaluationReport.items.filter(item =>
+                activeReviewFilter === "ALL" ? true : item.status === activeReviewFilter
+            );
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl p-8 text-center border border-slate-200 text-slate-500 text-sm">
+                        No questions match this filter.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => {
+                let badgeHtml = "";
+                let borderClass = "border-slate-200";
+                if (item.status === "CORRECT") {
+                    badgeHtml = `<span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-xs">✓ Correct (+${item.marksAwarded})</span>`;
+                    borderClass = "border-emerald-200";
+                } else if (item.status === "INCORRECT") {
+                    badgeHtml = `<span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800 font-bold text-xs">✗ Incorrect (${item.marksAwarded})</span>`;
+                    borderClass = "border-rose-200";
+                } else {
+                    badgeHtml = `<span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs">Skipped (0)</span>`;
+                }
+
+                return `
+                    <div class="bg-white rounded-2xl p-5 sm:p-6 border ${borderClass} shadow-2xs space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2.5 py-1 rounded-lg bg-slate-900 text-white font-bold text-xs">Q${item.index}</span>
+                                <span class="text-xs font-semibold text-slate-500">${escapeHtml(item.question.section || 'General')}</span>
+                                <span class="text-xs font-mono uppercase text-slate-400">• ${escapeHtml(item.question.type)}</span>
+                            </div>
+                            ${badgeHtml}
+                        </div>
+
+                        <div class="text-sm sm:text-base font-medium text-slate-900 whitespace-pre-line leading-relaxed">
+                            ${escapeHtml(item.question.question)}
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                            <div class="p-3 rounded-xl ${item.status === 'CORRECT' ? 'bg-emerald-50 border border-emerald-200 text-emerald-900' : item.status === 'INCORRECT' ? 'bg-rose-50 border border-rose-200 text-rose-900' : 'bg-slate-50 border border-slate-200 text-slate-700'}">
+                                <div class="text-[11px] font-bold uppercase tracking-wider opacity-70 mb-0.5">Your Answer</div>
+                                <div class="font-semibold">${escapeHtml(item.formattedUserAns)}</div>
+                            </div>
+                            <div class="p-3 rounded-xl bg-indigo-50/70 border border-indigo-200 text-indigo-950">
+                                <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-600 mb-0.5">Correct Answer</div>
+                                <div class="font-semibold">${escapeHtml(item.formattedCorrectAns)}</div>
+                            </div>
+                        </div>
+
+                        ${item.question.explanation ? `
+                            <div class="pt-3 border-t border-slate-100 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                <strong class="text-slate-800 block mb-1">Explanation / Solution:</strong>
+                                <div class="whitespace-pre-line">${escapeHtml(item.question.explanation)}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function retakeTest() {
+            startExamSession();
+        }
+
+        function logoutToHome() {
+            if (timerInterval) clearInterval(timerInterval);
+            currentUser = null;
+            document.getElementById("view-test").classList.add("hidden");
+            document.getElementById("view-results").classList.add("hidden");
+            document.getElementById("view-login").classList.remove("hidden");
+            updateLoginScreenMetadata();
+        }
+
+        function exportResultsReport() {
+            if (!lastEvaluationReport) return;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(lastEvaluationReport, null, 2));
+            const a = document.createElement("a");
+            a.setAttribute("href", dataStr);
+            a.setAttribute("download", `scorecard_${lastEvaluationReport.candidate.replace(/\s+/g, "_")}.json`);
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            showToast("Scorecard report downloaded!", "success");
+        }
+
+        // ====================================================================
+        // 7. QUESTION MANAGER / JSON IMPORTER LOGIC
+        // ====================================================================
+        function openManagerModal() {
+            const modal = document.getElementById("manager-modal");
+            const textarea = document.getElementById("json-editor-textarea");
+            textarea.value = JSON.stringify(testData, null, 2);
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+            switchManagerTab("json");
+        }
+
+        function closeManagerModal() {
+            const modal = document.getElementById("manager-modal");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        }
+
+        function switchManagerTab(tabName) {
+            ["json", "visual", "schema"].forEach(t => {
+                const btn = document.getElementById(`mgr-tab-${t}`);
+                const panel = document.getElementById(`mgr-panel-${t}`);
+                if (t === tabName) {
+                    btn.className = "px-4 py-2 rounded-t-xl font-semibold text-xs sm:text-sm bg-white text-indigo-600 border-t border-x border-slate-200";
+                    panel.classList.remove("hidden");
+                } else {
+                    btn.className = "px-4 py-2 rounded-t-xl font-semibold text-xs sm:text-sm text-slate-600 hover:text-slate-900";
+                    panel.classList.add("hidden");
+                }
+            });
+        }
+
+        function toggleVisualBuilderFields() {
+            const qType = document.getElementById("vq-type").value;
+            const mcqBox = document.getElementById("vq-mcq-box");
+            const directBox = document.getElementById("vq-direct-box");
+            const tolWrap = document.getElementById("vq-tolerance-wrap");
+
+            if (qType === "mcq") {
+                mcqBox.classList.remove("hidden");
+                directBox.classList.add("hidden");
+            } else {
+                mcqBox.classList.add("hidden");
+                directBox.classList.remove("hidden");
+                if (qType === "numeric") {
+                    tolWrap.classList.remove("hidden");
+                } else {
+                    tolWrap.classList.add("hidden");
+                }
+            }
+        }
+
+        function appendVisualQuestionToJson() {
+            const textarea = document.getElementById("json-editor-textarea");
+            let currentObj;
+            try {
+                currentObj = JSON.parse(textarea.value);
+            } catch (err) {
+                showToast("Current JSON in editor has a syntax error. Fix or reset it first.", "error");
+                return;
+            }
+
+            const qType = document.getElementById("vq-type").value;
+            const section = document.getElementById("vq-section").value.trim() || "General";
+            const marks = parseFloat(document.getElementById("vq-marks").value) || 1;
+            const negativeMarks = parseFloat(document.getElementById("vq-neg").value) || 0;
+            const questionText = document.getElementById("vq-question").value.trim();
+            const explanation = document.getElementById("vq-explanation").value.trim();
+
+            if (!questionText) {
+                showToast("Please enter the question text.", "error");
+                return;
+            }
+
+            const newQ = {
+                id: (currentObj.questions ? currentObj.questions.length : 0) + 1,
+                type: qType,
+                section,
+                question: questionText,
+                marks,
+                negativeMarks,
+                explanation
+            };
+
+            if (qType === "mcq") {
+                const opts = [
+                    document.getElementById("vq-opt-0").value.trim(),
+                    document.getElementById("vq-opt-1").value.trim(),
+                    document.getElementById("vq-opt-2").value.trim(),
+                    document.getElementById("vq-opt-3").value.trim()
+                ].filter(Boolean);
+
+                if (opts.length < 2) {
+                    showToast("Please provide at least 2 options for MCQ.", "error");
+                    return;
+                }
+                const checkedRadio = document.querySelector('input[name="vq-correct-opt"]:checked');
+                const ansIdx = checkedRadio ? Number(checkedRadio.value) : 0;
+                newQ.options = opts;
+                newQ.answer = Math.min(ansIdx, opts.length - 1);
+            } else if (qType === "numeric") {
+                const rawAns = document.getElementById("vq-direct-answer").value.trim();
+                if (rawAns === "" || isNaN(Number(rawAns))) {
+                    showToast("Please enter a valid number for the correct answer.", "error");
+                    return;
+                }
+                newQ.answer = Number(rawAns);
+                newQ.tolerance = parseFloat(document.getElementById("vq-tolerance").value) || 0;
+            } else {
+                const rawAns = document.getElementById("vq-direct-answer").value.trim();
+                if (!rawAns) {
+                    showToast("Please enter the correct text answer.", "error");
+                    return;
+                }
+                newQ.answer = rawAns;
+            }
+
+            if (!Array.isArray(currentObj.questions)) currentObj.questions = [];
+            currentObj.questions.push(newQ);
+            textarea.value = JSON.stringify(currentObj, null, 2);
+
+            // Clear visual form inputs
+            document.getElementById("vq-question").value = "";
+            document.getElementById("vq-explanation").value = "";
+            document.getElementById("vq-direct-answer").value = "";
+            ["0", "1", "2", "3"].forEach(i => document.getElementById(`vq-opt-${i}`).value = "");
+
+            showToast(`Question #${newQ.id} appended! Click "Apply & Save JSON" to activate.`, "success");
+            switchManagerTab("json");
+        }
+
+        function applyJsonFromEditor() {
+            const rawText = document.getElementById("json-editor-textarea").value.trim();
+            try {
+                const parsed = JSON.parse(rawText);
+                // Support pasting either a full object `{ title, questions: [...] }` OR a raw array of questions `[...]`
+                const normalized = Array.isArray(parsed)
+                    ? normalizeTestData({ ...testData, questions: parsed })
+                    : normalizeTestData(parsed);
+
+                if (!normalized.questions || normalized.questions.length === 0) {
+                    showToast("JSON must contain at least 1 question inside 'questions'.", "error");
+                    return;
+                }
+
+                testData = normalized;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(testData));
+                setSourceBadge("Custom JSON Active");
+                updateLoginScreenMetadata();
+
+                // If currently inside an active test session, refresh the test with new questions
+                if (!document.getElementById("view-test").classList.contains("hidden")) {
+                    startExamSession();
+                }
+
+                closeManagerModal();
+                showToast(`Loaded ${testData.questions.length} questions successfully!`, "success");
+            } catch (err) {
+                showToast("Invalid JSON format: " + err.message, "error");
+            }
+        }
+
+        function handleJsonFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById("json-editor-textarea").value = e.target.result;
+                showToast("File loaded into editor! Click 'Apply & Save JSON' to activate.", "info");
+            };
+            reader.readAsText(file);
+        }
+
+        function downloadQuestionsJson() {
+            const rawText = document.getElementById("json-editor-textarea").value;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(rawText);
+            const a = document.createElement("a");
+            a.setAttribute("href", dataStr);
+            a.setAttribute("download", "questions.json");
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            showToast("Downloaded questions.json! Commit it to your GitHub repo.", "success");
+        }
+
+        function copyFullJsonToClipboard() {
+            const textarea = document.getElementById("json-editor-textarea");
+            copyTextHelper(textarea.value, "Full JSON copied to clipboard!");
+        }
+
+        function copyAiPromptTemplate() {
+            const text = document.getElementById("ai-prompt-template").textContent;
+            copyTextHelper(text, "AI Prompt copied! Paste it in chat with your website link.");
+        }
+
+        function resetToDefaultData() {
+            localStorage.removeItem(STORAGE_KEY);
+            testData = normalizeTestData(DEFAULT_TEST_DATA);
+            document.getElementById("json-editor-textarea").value = JSON.stringify(testData, null, 2);
+            setSourceBadge("Built-in Set");
+            updateLoginScreenMetadata();
+            showToast("Reset to default built-in questions.", "info");
+        }
+
+        // ====================================================================
+        // 8. UI UTILITIES (Toast, Custom Confirm Modal, Clipboard, Escaping)
+        // ====================================================================
+        function showToast(message, type = "info") {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            const colorMap = {
+                success: "bg-emerald-600 text-white",
+                error: "bg-rose-600 text-white",
+                info: "bg-slate-900 text-white"
+            };
+            toast.className = `${colorMap[type] || colorMap.info} px-4 py-3 rounded-2xl shadow-lg text-xs sm:text-sm font-semibold flex items-center justify-between gap-3 pointer-events-auto animate-fade-in`;
+            toast.innerHTML = `<span>${escapeHtml(message)}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3400);
+        }
+
+        function showConfirmModal({ title, message, statsHtml = "", confirmText = "Confirm", onConfirm }) {
+            const modal = document.getElementById("confirm-modal");
+            document.getElementById("confirm-title").textContent = title;
+            document.getElementById("confirm-message").textContent = message;
+            const statsBox = document.getElementById("confirm-stats");
+            if (statsHtml) {
+                statsBox.innerHTML = statsHtml;
+                statsBox.classList.remove("hidden");
+            } else {
+                statsBox.classList.add("hidden");
+            }
+
+            const okBtn = document.getElementById("confirm-ok-btn");
+            const cancelBtn = document.getElementById("confirm-cancel-btn");
+            okBtn.textContent = confirmText;
+
+            const close = () => {
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+            };
+
+            okBtn.onclick = () => {
+                close();
+                if (onConfirm) onConfirm();
+            };
+            cancelBtn.onclick = close;
+
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function copyTextHelper(text, successMsg) {
+            const temp = document.createElement("textarea");
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                document.execCommand("copy");
+                showToast(successMsg, "success");
+            } catch (e) {
+                showToast("Could not copy automatically. Please select and copy manually.", "error");
+            }
+            temp.remove();
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
