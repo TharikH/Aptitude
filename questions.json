@@ -1,0 +1,394 @@
+{
+  "meta": {
+    "title": "Aptitude Assessment: Numbers, Spotting Errors & Series",
+    "subtitle": "30 Questions (Quantitative Aptitude, Verbal Error Spotting & Number Series) • Mixed MCQ & Numerical Entry",
+    "durationMinutes": 45
+  },
+  "users": [
+    {
+      "username": "friend",
+      "password": "password123",
+      "name": "Candidate",
+      "role": "student"
+    },
+    {
+      "username": "friend",
+      "password": "pass123",
+      "name": "Candidate",
+      "role": "student"
+    },
+    {
+      "username": "admin",
+      "password": "admin123",
+      "name": "Test Creator (Admin)",
+      "role": "admin"
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "The difference between a two-digit number and the number obtained by interchanging the positions of its digits is 36. What is the difference between the two digits of that number?",
+      "answer": 4,
+      "tolerance": 0,
+      "explanation": "Let the two-digit number be 10x + y. On reversing the digits, the number becomes 10y + x. Given: (10x + y) - (10y + x) = 36 => 9(x - y) = 36 => x - y = 4."
+    },
+    {
+      "id": 2,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "A two-digit number is such that the product of the digits is 12. When 9 is subtracted from the number, the digits are reversed. What is the number?",
+      "answer": 43,
+      "tolerance": 0,
+      "explanation": "Let the number be 10x + y. We are given xy = 12 and (10x + y) - 9 = 10y + x, which simplifies to 9(x - y) = 9 => x - y = 1. Since xy = 12 and x - y = 1, the digits are x = 4 and y = 3. Thus, the number is 43."
+    },
+    {
+      "id": 3,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "Find a positive number which when increased by 16 is equal to 80 times the reciprocal of the number.",
+      "answer": 4,
+      "tolerance": 0,
+      "explanation": "Let the positive number be x. According to the question: x + 16 = 80 / x => x² + 16x - 80 = 0 => (x + 20)(x - 4) = 0. Since x is positive, x = 4."
+    },
+    {
+      "id": 4,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "What is the sum of two consecutive odd numbers, the difference of whose squares is 56?",
+      "answer": 28,
+      "tolerance": 0,
+      "explanation": "Let the two consecutive odd numbers be x and x + 2. Given: (x + 2)² - x² = 56 => (x² + 4x + 4) - x² = 56 => 4x + 4 = 56 => 4x = 52 => x = 13. The numbers are 13 and 15, and their sum is 13 + 15 = 28."
+    },
+    {
+      "id": 5,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "The product of two numbers is 108 and the sum of their squares is 225. Find the positive difference between the two numbers.",
+      "answer": 3,
+      "tolerance": 0,
+      "explanation": "Let the numbers be x and y. Given xy = 108 and x² + y² = 225. Using the identity (x - y)² = x² + y² - 2xy, we get (x - y)² = 225 - 2(108) = 225 - 216 = 9. Taking the positive square root gives |x - y| = 3."
+    },
+    {
+      "id": 6,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 1,
+      "question": "What is the sum of the first 50 natural numbers?",
+      "answer": 1275,
+      "tolerance": 0,
+      "explanation": "Using the sum of the first n natural numbers formula S = n(n + 1)/2: For n = 50, S = 50 × 51 / 2 = 25 × 51 = 1275."
+    },
+    {
+      "id": 7,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "What is the unit's digit in the product (267)^153 × (66666)^72 ?",
+      "answer": 2,
+      "tolerance": 0,
+      "explanation": "The unit digit of (267)^153 depends on 7^153. Since the cyclicity of 7 is 4 and 153 = 4(38) + 1, the unit digit of (267)^153 is 7^1 = 7. Any positive integer power of a number ending in 6 ends in 6, so (66666)^72 ends in 6. Product of unit digits = 7 × 6 = 42, which has a unit digit of 2."
+    },
+    {
+      "id": 8,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "What is the total number of prime factors in the expression (12)^12 × (16)^16 × (18)^18 ?",
+      "answer": 154,
+      "tolerance": 0,
+      "explanation": "Express each base in prime factors:\n(12)^12 = (2² × 3)^12 = 2^24 × 3^12 (24 + 12 = 36 prime factors)\n(16)^16 = (2^4)^16 = 2^64 (64 prime factors)\n(18)^18 = (2 × 3²)^18 = 2^18 × 3^36 (18 + 36 = 54 prime factors)\nTotal number of prime factors = 36 + 64 + 54 = 154."
+    },
+    {
+      "id": 9,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "What digit should be assigned to # so that the number 2582#724 is divisible by 11?",
+      "answer": 6,
+      "tolerance": 0,
+      "explanation": "For divisibility by 11, the difference between the sum of digits at odd places and even places must be 0 or a multiple of 11.\nSum of odd-place digits (from left: positions 1, 3, 5, 7) = 2 + 8 + # + 2 = 12 + #.\nSum of even-place digits (positions 2, 4, 6, 8) = 5 + 2 + 7 + 4 = 18.\nSetting (12 + #) - 18 = 0 gives # = 6."
+    },
+    {
+      "id": 10,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "You are given the largest 5-digit number (99999). You have to subtract x from this number so that the resulting number is divisible by 23. Find the smallest possible positive value of x.",
+      "answer": 18,
+      "tolerance": 0,
+      "explanation": "The largest 5-digit number is 99999. Dividing 99999 by 23: 99999 = 23 × 4347 + 18. Since the remainder is 18, the smallest positive value of x to subtract so that it becomes exactly divisible by 23 is 18."
+    },
+    {
+      "id": 11,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "A number leaves remainders 1, 4 and 7 on being divided successively by 3, 5 and 8 respectively. What is the product of the remainders when the order of divisors is reversed (i.e., divided successively by 8, 5 and 3)?",
+      "answer": 48,
+      "tolerance": 0,
+      "explanation": "Working backwards with the smallest quotient 0 for the last division:\nBefore dividing by 8: 8(0) + 7 = 7\nBefore dividing by 5: 5(7) + 4 = 39\nSmallest such number N = 3(39) + 1 = 118.\nNow divide 118 successively by 8, 5, and 3:\n118 ÷ 8 = 14 with remainder 6\n14 ÷ 5 = 2 with remainder 4\n2 ÷ 3 = 0 with remainder 2.\nThe new remainders are 6, 4, and 2. Their product is 6 × 4 × 2 = 48."
+    },
+    {
+      "id": 12,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "What is the smallest number which when divided by 6, 9, 11, 16 and 22 leaves a remainder of 3 in each case?",
+      "answer": 1587,
+      "tolerance": 0,
+      "explanation": "First find the LCM of 6, 9, 11, 16, and 22:\n6 = 2 × 3\n9 = 3²\n11 = 11\n16 = 2^4\n22 = 2 × 11\nLCM = 2^4 × 3² × 11 = 16 × 9 × 11 = 1584.\nSince the number leaves a remainder of 3 in each case, required number = 1584 + 3 = 1587."
+    },
+    {
+      "id": 13,
+      "type": "mcq",
+      "category": "Numbers (Quantitative)",
+      "marks": 1,
+      "question": "Which of the following fractions is the largest of all?\n(i) 7/8   (ii) 15/16   (iii) 23/24   (iv) 31/32",
+      "options": [
+        "(i) 7/8",
+        "(ii) 15/16",
+        "(iii) 23/24",
+        "(iv) 31/32"
+      ],
+      "answer": 3,
+      "explanation": "Notice that each fraction is of the form 1 - (1/n):\n7/8 = 1 - 1/8 = 0.875\n15/16 = 1 - 1/16 = 0.9375\n23/24 = 1 - 1/24 ≈ 0.9583\n31/32 = 1 - 1/32 = 0.96875.\nSince 1/32 is the smallest subtracted part, 31/32 is the largest fraction."
+    },
+    {
+      "id": 14,
+      "type": "number",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "Which is the largest number that divides 17, 23, 35, and 59 to leave the same remainder in each case?",
+      "answer": 6,
+      "tolerance": 0,
+      "explanation": "To find the largest number that leaves the same remainder when dividing a, b, c, d, we take the HCF (GCD) of the differences between consecutive numbers:\n23 - 17 = 6\n35 - 23 = 12\n59 - 35 = 24\nHCF(6, 12, 24) = 6."
+    },
+    {
+      "id": 15,
+      "type": "mcq",
+      "category": "Numbers (Quantitative)",
+      "marks": 2,
+      "question": "Find the values of a, b, c, and d in the expression:\n(2^a) × (3^b) × (5^c) × (11^d) = 720",
+      "options": [
+        "2, 4, 1, 0",
+        "4, 2, 1, 0",
+        "4, 2, 1, 1",
+        "3, 2, 2, 1"
+      ],
+      "answer": 1,
+      "explanation": "Prime factorization of 720:\n720 = 16 × 9 × 5 = (2^4) × (3^2) × (5^1) × (11^0).\nComparing exponents gives a = 4, b = 2, c = 1, d = 0."
+    },
+    {
+      "id": 16,
+      "type": "mcq",
+      "category": "Spotting Errors (Verbal)",
+      "marks": 1,
+      "question": "Identify the part of the sentence that contains a grammatical error. If there is no error, select 'No error'.\n\n[A] According to ancient wisdom / [B] it is kind and generous / [C] who shall win universal respect. / [D] No error",
+      "options": [
+        "According to ancient wisdom",
+        "it is kind and generous",
+        "who shall win universal respect.",
+        "No error"
+      ],
+      "answer": 1,
+      "explanation": "Error in Part B: When adjectives like 'kind' and 'generous' are used as plural nouns to represent a class of people (as indicated by the relative pronoun 'who'), they require the definite article 'the' ('it is the kind and generous who...')."
+    },
+    {
+      "id": 17,
+      "type": "mcq",
+      "category": "Spotting Errors (Verbal)",
+      "marks": 1,
+      "question": "Identify the part of the sentence that contains a grammatical error. If there is no error, select 'No error'.\n\n[A] The information you / [B] requested are not / [C] readily available. / [D] No error",
+      "options": [
+        "The information you",
+        "requested are not",
+        "readily available.",
+        "No error"
+      ],
+      "answer": 1,
+      "explanation": "Error in Part B: 'Information' is an uncountable (singular) noun and takes a singular verb. Replace 'are not' with 'is not'."
+    },
+    {
+      "id": 18,
+      "type": "mcq",
+      "category": "Spotting Errors (Verbal)",
+      "marks": 1,
+      "question": "Identify the part of the sentence that contains a grammatical error. If there is no error, select 'No error'.\n\n[A] The charity have collected / [B] donations from various / [C] generous donors this year. / [D] No error",
+      "options": [
+        "The charity have collected",
+        "donations from various",
+        "generous donors this year.",
+        "No error"
+      ],
+      "answer": 0,
+      "explanation": "Error in Part A: 'The charity' is a singular collective noun acting as a single organization, so it requires the singular auxiliary verb 'has' ('The charity has collected')."
+    },
+    {
+      "id": 19,
+      "type": "mcq",
+      "category": "Spotting Errors (Verbal)",
+      "marks": 1,
+      "question": "Identify the part of the sentence that contains a grammatical error. If there is no error, select 'No error'.\n\n[A] She is good / [B] in mathematics / [C] as well as science. / [D] No error",
+      "options": [
+        "She is good",
+        "in mathematics",
+        "as well as science.",
+        "No error"
+      ],
+      "answer": 1,
+      "explanation": "Error in Part B: The adjective 'good' takes the preposition 'at' when referring to proficiency in a subject or skill ('She is good at mathematics')."
+    },
+    {
+      "id": 20,
+      "type": "mcq",
+      "category": "Spotting Errors (Verbal)",
+      "marks": 1,
+      "question": "Identify the part of the sentence that contains a grammatical error. If there is no error, select 'No error'.\n\n[A] If you attend with / [B] the lecture carefully / [C] you can understand it fully. / [D] No error",
+      "options": [
+        "If you attend with",
+        "the lecture carefully",
+        "you can understand it fully.",
+        "No error"
+      ],
+      "answer": 0,
+      "explanation": "Error in Part A: 'Attend' in the sense of being present at or listening to a lecture is a transitive verb (or takes 'attend to' for paying attention), not 'attend with'. It should be 'If you attend the lecture carefully' or 'attend to the lecture'."
+    },
+    {
+      "id": 21,
+      "type": "mcq",
+      "category": "Spotting Errors (Verbal)",
+      "marks": 1,
+      "question": "Identify the part of the sentence that contains a grammatical error. If there is no error, select 'No error'.\n\n[A] Neither the employees / [B] nor the manager / [C] were aware of the changes. / [D] No error",
+      "options": [
+        "Neither the employees",
+        "nor the manager",
+        "were aware of the changes.",
+        "No error"
+      ],
+      "answer": 2,
+      "explanation": "Error in Part C: When two subjects are joined by 'Neither... nor', the verb agrees with the closer subject ('the manager', which is singular). Therefore, 'were' should be replaced by 'was' ('was aware of the changes')."
+    },
+    {
+      "id": 22,
+      "type": "mcq",
+      "category": "Spotting Errors (Verbal)",
+      "marks": 1,
+      "question": "Identify the part of the sentence that contains a grammatical error. If there is no error, select 'No error'.\n\n[A] The manager asked / [B] if someone can explain / [C] the sudden increase in expenses. / [D] No error",
+      "options": [
+        "The manager asked",
+        "if someone can explain",
+        "the sudden increase in expenses.",
+        "No error"
+      ],
+      "answer": 1,
+      "explanation": "Error in Part B: Since the reporting verb 'asked' is in the past tense, the modal verb in the reported clause must also be in the past tense ('could explain' instead of 'can explain')."
+    },
+    {
+      "id": 23,
+      "type": "mcq",
+      "category": "Spotting Errors (Verbal)",
+      "marks": 1,
+      "question": "Identify the part of the sentence that contains a grammatical error. If there is no error, select 'No error'.\n\n[A] They insisted to start / [B] the journey without / [C] checking the weather forecast. / [D] No error",
+      "options": [
+        "They insisted to start",
+        "the journey without",
+        "checking the weather forecast.",
+        "No error"
+      ],
+      "answer": 0,
+      "explanation": "Error in Part A: The verb 'insist' takes the preposition 'on' followed by a gerund (-ing form), not an infinitive ('They insisted on starting' instead of 'insisted to start')."
+    },
+    {
+      "id": 24,
+      "type": "mcq",
+      "category": "Spotting Errors (Verbal)",
+      "marks": 1,
+      "question": "Identify the part of the sentence that contains a grammatical error. If there is no error, select 'No error'.\n\n[A] We look forward / [B] to meet you / [C] next week. / [D] No error",
+      "options": [
+        "We look forward",
+        "to meet you",
+        "next week.",
+        "No error"
+      ],
+      "answer": 1,
+      "explanation": "Error in Part B: In the phrasal expression 'look forward to', 'to' is a preposition and must be followed by a gerund (-ing form). Replace 'to meet you' with 'to meeting you'."
+    },
+    {
+      "id": 25,
+      "type": "mcq",
+      "category": "Spotting Errors (Verbal)",
+      "marks": 1,
+      "question": "Identify the part of the sentence that contains a grammatical error. If there is no error, select 'No error'.\n\n[A] All the furniture / [B] have been sold / [C] at a good price. / [D] No error",
+      "options": [
+        "All the furniture",
+        "have been sold",
+        "at a good price.",
+        "No error"
+      ],
+      "answer": 1,
+      "explanation": "Error in Part B: 'Furniture' is an uncountable noun and always takes a singular verb. Replace 'have been sold' with 'has been sold'."
+    },
+    {
+      "id": 26,
+      "type": "number",
+      "category": "Series (Logical Reasoning)",
+      "marks": 2,
+      "question": "What is the missing number in the following sequence?\n2, 12, 60, 240, 720, 1440, ?, 0",
+      "answer": 1440,
+      "tolerance": 0,
+      "explanation": "Look at the multipliers between consecutive terms:\n2 × 6 = 12\n12 × 5 = 60\n60 × 4 = 240\n240 × 3 = 720\n720 × 2 = 1440\n1440 × 1 = 1440\n1440 × 0 = 0.\nThus, the missing number is 1440."
+    },
+    {
+      "id": 27,
+      "type": "number",
+      "category": "Series (Logical Reasoning)",
+      "marks": 1,
+      "question": "What will be the next number in the series?\n3, 5, 7, 11, 13, 17, ...",
+      "answer": 19,
+      "tolerance": 0,
+      "explanation": "This is the sequence of consecutive prime numbers starting from 3: 3, 5, 7, 11, 13, 17. The next prime number after 17 is 19."
+    },
+    {
+      "id": 28,
+      "type": "number",
+      "category": "Series (Logical Reasoning)",
+      "marks": 2,
+      "question": "Find the wrong number in the series:\n8, 24, 12, 36, 18, 54, 28",
+      "answer": 28,
+      "tolerance": 0,
+      "explanation": "The pattern alternates between multiplying by 3 and dividing by 2:\n8 × 3 = 24\n24 ÷ 2 = 12\n12 × 3 = 36\n36 ÷ 2 = 18\n18 × 3 = 54\n54 ÷ 2 = 27 (instead of 28).\nTherefore, 28 is the wrong number in the series."
+    },
+    {
+      "id": 29,
+      "type": "mcq",
+      "category": "Series (Logical Reasoning)",
+      "marks": 1,
+      "question": "The Fibonacci sequence is the sequence of integers:",
+      "options": [
+        "1, 3, 5, 7, 9, 11, 13",
+        "0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55",
+        "0, 1, 3, 4, 7, 11, 18, 29, 47",
+        "0, 1, 3, 7, 15"
+      ],
+      "answer": 1,
+      "explanation": "In the Fibonacci sequence, each term after the first two (0, 1) is the sum of the two preceding terms: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55."
+    },
+    {
+      "id": 30,
+      "type": "number",
+      "category": "Series (Logical Reasoning)",
+      "marks": 2,
+      "question": "Find the wrong number in the series:\n15, 25, 30, 46, 85, 90, 115",
+      "answer": 46,
+      "tolerance": 0,
+      "explanation": "Every number in the series (15, 25, 30, 85, 90, 115) is a multiple of 5 except 46 (which should be 45 or another multiple of 5). Therefore, 46 is the wrong number."
+    }
+  ]
+}
